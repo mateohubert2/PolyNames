@@ -24,7 +24,7 @@ public class GameController {
         ArrayList<Player> players = gameDAO.findPlayer(Integer.parseInt(id_partie));
         content = new Content(game, cards, players);
         if(content.game() == null){
-            response.notFound("Desole, aucune partie n'a ete trouvee");
+            response.json("Desole, aucune partie n'a ete trouvee");
         }
         else{
             response.json(content);
