@@ -6,6 +6,7 @@ import models.Color;
 import models.Game;
 import models.GameRole;
 import models.Player;
+import webserver.WebServer;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -36,5 +37,7 @@ public class App {
        for(int i = 0; i < allCard.size(); i++){
             System.out.println("Le carte ayant pour id: " + allCard.get(i).id() + " contient le mot: " + allCard.get(i).mot() + " est de la langue: " + allCard.get(i).langue() + " et est de couleur: " + allCard.get(i).couleur());
        }
+       WebServer webserver = new WebServer();
+       webserver.listen(8080);
     }
 }
