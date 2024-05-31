@@ -1,0 +1,7 @@
+.$Diagramme_PolyNames.drawio.bkp
+Backend/.vscode/settings.json
+Backend/bin/App.class
+Backend/bin/dao/GameDAO.class
+Backend/bin/database/MySQLDatabase.class
+Backend/bin/database/PolyNamesDatabase.class
+Backend/bin/models/Game.class
