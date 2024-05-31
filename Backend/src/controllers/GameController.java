@@ -20,10 +20,15 @@ public class GameController {
         String id_partie = request.getParam("gameId");
         GameDAO gameDAO = new GameDAO();
         Game game = gameDAO.findGame(Integer.parseInt(id_partie));
-        ArrayList<Card> cards = gameDAO.findAllCard();
-        ArrayList<Player> players = gameDAO.findAllPlayer();
+        ArrayList<Card> cards = gameDAO.findCard(Integer.parseInt(id_partie));
+        ArrayList<Player> players = gameDAO.findPlayer(Integer.parseInt(id_partie));
         content = new Content(game, cards, players);
-        response.json(content);
+        if(content.game() == null){
+            response.notFound("Desole, aucune partie n'a ete trouvee");
+        }
+        else{
+            response.json(content);
+        }
         return content;
     }
 }

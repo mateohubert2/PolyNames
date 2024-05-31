@@ -119,6 +119,44 @@ public class GameDAO {
         return players;
     }
 
+    public ArrayList<Player> findPlayer(int partie){
+        PolyNamesDatabase polyNames;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        ArrayList<Player> players = new ArrayList<Player>();
+        String sqlquery = "SELECT * FROM `Joueur` WHERE `partie` = ?;";
+        PreparedStatement myPreparedStatement;
+        try {
+            myPreparedStatement = polyNames.prepareStatement(sqlquery);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatement = null;
+        }
+        try {
+            myPreparedStatement.setInt(1, partie);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        try {
+            ResultSet myResults = myPreparedStatement.executeQuery();
+            while(myResults.next()){
+                int id = myResults.getInt("id");
+                String nom = myResults.getString("nom");
+                int role = myResults.getInt("role");
+                Player player = new Player(id, nom, role);
+                players.add(player);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return players;
+    }
+
     public ArrayList<Color> findAllColor(){
         PolyNamesDatabase polyNames;
         try {
@@ -200,6 +238,45 @@ public class GameDAO {
             System.err.println("Impossible de préparer la requête:");
             System.err.println(e.getMessage());
             myPreparedStatement = null;
+        }
+        try {
+            ResultSet myResults = myPreparedStatement.executeQuery();
+            while(myResults.next()){
+                int id = myResults.getInt("id");
+                String mot = myResults.getString("mot");
+                String langue = myResults.getString("langue");
+                int couleur = myResults.getInt("couleur");
+                Card card = new Card(id, mot, langue, couleur);
+                cards.add(card);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return cards;
+    }
+
+    public ArrayList<Card> findCard(int partie){
+        PolyNamesDatabase polyNames;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        ArrayList<Card> cards = new ArrayList<Card>();
+        String sqlquery = "SELECT * FROM `Carte` WHERE `partie` = ?;";
+        PreparedStatement myPreparedStatement;
+        try {
+            myPreparedStatement = polyNames.prepareStatement(sqlquery);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatement = null;
+        }
+        try {
+            myPreparedStatement.setInt(1, partie);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
         }
         try {
             ResultSet myResults = myPreparedStatement.executeQuery();
