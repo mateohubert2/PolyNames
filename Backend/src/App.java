@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 
+import controllers.GameController;
 import dao.GameDAO;
 import models.Card;
 import models.Color;
@@ -7,6 +8,7 @@ import models.Game;
 import models.GameRole;
 import models.Player;
 import webserver.WebServer;
+import webserver.WebServerContext;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -39,5 +41,6 @@ public class App {
        }
        WebServer webserver = new WebServer();
        webserver.listen(8080);
+       webserver.getRouter().get("/content/:gameId", (WebServerContext context) -> { GameController.getGameContent(context);});
     }
 }

@@ -49,6 +49,43 @@ public class GameDAO {
         return games;
     }
 
+    public Game findGame(int partie){
+        PolyNamesDatabase polyNames;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        Game game = null;
+        String sqlquery = "SELECT * FROM `Partie` WHERE `id` = ?;";
+        PreparedStatement myPreparedStatement;
+        try {
+            myPreparedStatement = polyNames.prepareStatement(sqlquery);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatement = null;
+        }
+        try {
+            myPreparedStatement.setInt(1, partie);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        try {
+            ResultSet myResults = myPreparedStatement.executeQuery();
+            while(myResults.next()){
+                int id = myResults.getInt("id");
+                int code_numerique = myResults.getInt("code_numerique");
+                String code_perso = myResults.getString("code_perso");
+                game = new Game(id, code_numerique, code_perso);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return game;
+    }
+
     public ArrayList<Player> findAllPlayer(){
         PolyNamesDatabase polyNames;
         try {

@@ -18,3 +18,5 @@ Backend/bin/webserver/WebServerRouteHandler.class
 Backend/bin/webserver/WebServerRouteNotFoundException.class
 Backend/bin/webserver/WebServerRouter.class
 Backend/bin/webserver/WebServerSSE.class
+Backend/bin/controllers/GameController.class
+Backend/bin/models/Content.class
