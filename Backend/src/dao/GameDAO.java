@@ -6,7 +6,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import database.PolyNamesDatabase;
+import models.Card;
+import models.Color;
 import models.Game;
+import models.GameRole;
+import models.Player;
 
 public class GameDAO {
     public GameDAO(){
@@ -43,5 +47,136 @@ public class GameDAO {
             System.err.println(e.getMessage());
         }
         return games;
+    }
+
+    public ArrayList<Player> findAllPlayer(){
+        PolyNamesDatabase polyNames;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        ArrayList<Player> players = new ArrayList<Player>();
+        String sqlquery = "SELECT * FROM `Joueur` ORDER BY `id` ASC;";
+        PreparedStatement myPreparedStatement;
+        try {
+            myPreparedStatement = polyNames.prepareStatement(sqlquery);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatement = null;
+        }
+        try {
+            ResultSet myResults = myPreparedStatement.executeQuery();
+            while(myResults.next()){
+                int id = myResults.getInt("id");
+                String nom = myResults.getString("nom");
+                int role = myResults.getInt("role");
+                Player player = new Player(id, nom, role);
+                players.add(player);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return players;
+    }
+
+    public ArrayList<Color> findAllColor(){
+        PolyNamesDatabase polyNames;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        ArrayList<Color> colors = new ArrayList<Color>();
+        String sqlquery = "SELECT * FROM `Couleur` ORDER BY `couleur_id` ASC;";
+        PreparedStatement myPreparedStatement;
+        try {
+            myPreparedStatement = polyNames.prepareStatement(sqlquery);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatement = null;
+        }
+        try {
+            ResultSet myResults = myPreparedStatement.executeQuery();
+            while(myResults.next()){
+                int id = myResults.getInt("couleur_id");
+                String nom = myResults.getString("nom");
+                Color color = new Color(id, nom);
+                colors.add(color);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return colors;
+    }
+
+    public ArrayList<GameRole> findAllGameRole(){
+        PolyNamesDatabase polyNames;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        ArrayList<GameRole> roles = new ArrayList<GameRole>();
+        String sqlquery = "SELECT * FROM `Rôle` ORDER BY `id` ASC;";
+        PreparedStatement myPreparedStatement;
+        try {
+            myPreparedStatement = polyNames.prepareStatement(sqlquery);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatement = null;
+        }
+        try {
+            ResultSet myResults = myPreparedStatement.executeQuery();
+            while(myResults.next()){
+                int id = myResults.getInt("id");
+                String nom = myResults.getString("role");
+                GameRole role = new GameRole(id, nom);
+                roles.add(role);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return roles;
+    }
+
+    public ArrayList<Card> findAllCard(){
+        PolyNamesDatabase polyNames;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        ArrayList<Card> cards = new ArrayList<Card>();
+        String sqlquery = "SELECT * FROM `Carte` ORDER BY `id` ASC;";
+        PreparedStatement myPreparedStatement;
+        try {
+            myPreparedStatement = polyNames.prepareStatement(sqlquery);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatement = null;
+        }
+        try {
+            ResultSet myResults = myPreparedStatement.executeQuery();
+            while(myResults.next()){
+                int id = myResults.getInt("id");
+                String mot = myResults.getString("mot");
+                String langue = myResults.getString("langue");
+                int couleur = myResults.getInt("couleur");
+                Card card = new Card(id, mot, langue, couleur);
+                cards.add(card);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return cards;
     }
 }

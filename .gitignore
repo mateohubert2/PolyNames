@@ -5,3 +5,7 @@ Backend/bin/dao/GameDAO.class
 Backend/bin/database/MySQLDatabase.class
 Backend/bin/database/PolyNamesDatabase.class
 Backend/bin/models/Game.class
+Backend/bin/models/Card.class
+Backend/bin/models/Color.class
+Backend/bin/models/GameRole.class
+Backend/bin/models/Player.class
