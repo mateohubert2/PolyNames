@@ -1,6 +1,9 @@
 package webserver;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.google.gson.Gson;
@@ -47,6 +50,53 @@ public class WebServerResponse {
         } catch (IOException e) {
 
         }
+    }
+
+    public void sendFile(int statusCode, String fileName) {
+        this.initCors();
+        InputStream inputStream = null;
+        byte[] bytes = null;
+        int indexPoint = fileName.lastIndexOf('.');
+
+        String extension = "";
+        if (indexPoint > 0) {
+            extension = fileName.substring(indexPoint + 1);
+        }
+        System.out.println(fileName);
+        try {
+            inputStream = new FileInputStream("../Frontend/" + fileName);
+        } catch (FileNotFoundException e) {
+            System.err.println(e.getMessage());
+        }
+        if(extension.equals("js")){
+            exchange.getResponseHeaders().set("Content-Type", "application/javascript");
+            bytes = fileToBytes(inputStream);
+        }
+        if(extension.equals("html")){
+            bytes = fileToBytes(inputStream);
+        }
+        try {
+            exchange.sendResponseHeaders(statusCode, bytes.length);
+            OutputStream os = exchange.getResponseBody();
+            os.write(bytes);
+            os.close();
+         } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public static byte[] fileToBytes(InputStream inputStream){
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        StringBuilder content = new StringBuilder();
+        try {
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                content.append(new String(buffer, 0, bytesRead));
+            }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+        return content.toString().getBytes();
     }
 
     private void initCors() {
