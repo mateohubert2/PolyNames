@@ -72,6 +72,22 @@ public class WebServerResponse {
             exchange.getResponseHeaders().set("Content-Type", "application/javascript");
             bytes = fileToBytes(inputStream);
         }
+        if(extension.equals("ico")){
+            exchange.getResponseHeaders().set("Content-Type", "image/x-icon");
+            try {
+                bytes = inputStream.readAllBytes();
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+        }
+        if(extension.equals("png")){
+            exchange.getResponseHeaders().set("Content-Type", "image/png");
+            try {
+                bytes = inputStream.readAllBytes();
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+        }
         if(extension.equals("html")){
             bytes = fileToBytes(inputStream);
         }
