@@ -332,4 +332,37 @@ public class GameDAO {
             return false;
         }
     }
+
+    public boolean createGame(int code_partie, String nom){
+        PolyNamesDatabase polyNames;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        String sqlquery = "INSERT INTO `Partie` (code_numerique, code_perso) VALUES (?, ?);";
+        PreparedStatement myPreparedStatement;
+        try {
+            myPreparedStatement = polyNames.prepareStatement(sqlquery);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatement = null;
+        }
+        try {
+            myPreparedStatement.setInt(1, code_partie);
+            myPreparedStatement.setString(2, nom);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        boolean myResults;
+        try {
+            myResults = myPreparedStatement.execute();
+            return myResults;
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            return false;
+        }
+    }
 }

@@ -10,9 +10,10 @@ public class App {
        webserver.getRouter().get("/favicon.ico", (WebServerContext context) -> { GameController.sendSpecificContent(context); });
        webserver.getRouter().get("/fond.png", (WebServerContext context) -> { GameController.sendSpecificContent(context); });
        webserver.getRouter().get("/style.css", (WebServerContext context) -> { GameController.sendSpecificContent(context); });
+       webserver.getRouter().get("/creategame/:nom", (WebServerContext context) -> { GameController.createGame(context); });
        webserver.getRouter().get("/findgame/:code_partie", (WebServerContext context) -> { GameController.isGame(context); });
        webserver.getRouter().get("/view/menu-view.js", (WebServerContext context) -> { GameController.sendSpecificContent(context); });
        webserver.getRouter().get("/services/game-service.js", (WebServerContext context) -> { GameController.sendSpecificContent(context); });
        webserver.getRouter().get("/content/:gameId", (WebServerContext context) -> { GameController.getGameContent(context); });
     }
-}   
+}

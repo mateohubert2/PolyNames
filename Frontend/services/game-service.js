@@ -18,4 +18,15 @@ export class GameService {
             return false;
         }
     }
+    static async createGame(nom){
+        const response = await fetch("http://localhost:8080/creategame/"+nom);
+        if(response.status === 200){
+            console.log("La partie a été créer");
+            return true;
+        }
+        else{
+            console.log("La partie n'a pas été créer");
+            return false;
+        }
+    }
 }

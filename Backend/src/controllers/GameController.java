@@ -1,6 +1,7 @@
 package controllers;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import dao.GameDAO;
 import models.Game;
@@ -52,13 +53,35 @@ public class GameController {
         WebServerResponse response = context.getResponse();
         WebServerRequest request = context.getRequest();
         String code = request.getParam("code_partie");
-        int code_partie = Integer.parseInt(code);
-        boolean exist = gameDAO.isGame(code_partie);
+        int codePartie = Integer.parseInt(code);
+        boolean exist = gameDAO.isGame(codePartie);
         if(exist){
             response.ok("La partie existe");
         }
         else{
             response.notFound("La partie n'existe pas");
+        }
+    }
+    
+    public static void createGame(WebServerContext context){
+        GameDAO gameDAO = new GameDAO();
+        WebServerResponse response = context.getResponse();
+        WebServerRequest request = context.getRequest();
+        String nom = request.getParam("nom");
+        Random objTemp = new Random();
+        int codePartie = objTemp.nextInt(100); 
+        boolean codeAlreadyExist = gameDAO.isGame(codePartie);
+        while(codeAlreadyExist){
+            codePartie = objTemp.nextInt(100);
+            codeAlreadyExist = gameDAO.isGame(codePartie);
+        }
+        gameDAO.createGame(codePartie, nom);
+        boolean create = gameDAO.isGame(codePartie);
+        if(create){
+            response.ok("La partie à été crée");
+        }
+        else{
+            response.notFound("La partie n'a pas été crée");
         }
     }
 }
