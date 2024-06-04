@@ -58,7 +58,7 @@ public class GameDAO {
             polyNames = null;
         }
         Game game = null;
-        String sqlquery = "SELECT * FROM `Partie` WHERE `id` = ?;";
+        String sqlquery = "SELECT * FROM `Partie` WHERE `code_numerique` = ?;";
         PreparedStatement myPreparedStatement;
         try {
             myPreparedStatement = polyNames.prepareStatement(sqlquery);
@@ -292,5 +292,44 @@ public class GameDAO {
             System.err.println(e.getMessage());
         }
         return cards;
+    }
+
+    public boolean isGame(int code_partie){
+        PolyNamesDatabase polyNames;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        String sqlquery = "SELECT `id` FROM `Partie` WHERE `code_numerique` = ?;";
+        PreparedStatement myPreparedStatement;
+        try {
+            myPreparedStatement = polyNames.prepareStatement(sqlquery);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatement = null;
+        }
+        try {
+            myPreparedStatement.setInt(1, code_partie);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        int id = -1;
+        try {
+            ResultSet myResults = myPreparedStatement.executeQuery();
+            while(myResults.next()){
+                id = myResults.getInt("id");
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        if(id != -1){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }

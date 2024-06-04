@@ -20,8 +20,9 @@ public class GameController {
         String id_partie = request.getParam("gameId");
         GameDAO gameDAO = new GameDAO();
         Game game = gameDAO.findGame(Integer.parseInt(id_partie));
-        ArrayList<Card> cards = gameDAO.findCard(Integer.parseInt(id_partie));
-        ArrayList<Player> players = gameDAO.findPlayer(Integer.parseInt(id_partie));
+        int id = game.id();
+        ArrayList<Card> cards = gameDAO.findCard(id);
+        ArrayList<Player> players = gameDAO.findPlayer(id);
         content = new Content(game, cards, players);
         if(content.game() == null){
             response.json("Desole, aucune partie n'a ete trouvee");
@@ -44,5 +45,20 @@ public class GameController {
         String file = request.getPath();
         System.out.println(file);
         response.sendFile(200, file);
+    }
+
+    public static void isGame(WebServerContext context){
+        GameDAO gameDAO = new GameDAO();
+        WebServerResponse response = context.getResponse();
+        WebServerRequest request = context.getRequest();
+        String code = request.getParam("code_partie");
+        int code_partie = Integer.parseInt(code);
+        boolean exist = gameDAO.isGame(code_partie);
+        if(exist){
+            response.ok("La partie existe");
+        }
+        else{
+            response.notFound("La partie n'existe pas");
+        }
     }
 }

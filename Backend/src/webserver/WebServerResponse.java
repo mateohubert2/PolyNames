@@ -88,6 +88,14 @@ public class WebServerResponse {
                 System.err.println(e.getMessage());
             }
         }
+        if(extension.equals("css")){
+            exchange.getResponseHeaders().set("Content-Type", "text/css" );
+            try {
+                bytes = inputStream.readAllBytes();
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+        }
         if(extension.equals("html")){
             bytes = fileToBytes(inputStream);
         }
