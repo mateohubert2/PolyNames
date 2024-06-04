@@ -244,9 +244,8 @@ public class GameDAO {
             while(myResults.next()){
                 int id = myResults.getInt("id");
                 String mot = myResults.getString("mot");
-                String langue = myResults.getString("langue");
                 int couleur = myResults.getInt("couleur");
-                Card card = new Card(id, mot, langue, couleur);
+                Card card = new Card(id, mot, couleur);
                 cards.add(card);
             }
         } catch (SQLException e) {
@@ -283,9 +282,8 @@ public class GameDAO {
             while(myResults.next()){
                 int id = myResults.getInt("id");
                 String mot = myResults.getString("mot");
-                String langue = myResults.getString("langue");
                 int couleur = myResults.getInt("couleur");
-                Card card = new Card(id, mot, langue, couleur);
+                Card card = new Card(id, mot, couleur);
                 cards.add(card);
             }
         } catch (SQLException e) {
@@ -356,13 +354,55 @@ public class GameDAO {
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
-        boolean myResults;
+        boolean request;
         try {
-            myResults = myPreparedStatement.execute();
-            return myResults;
+            request = myPreparedStatement.execute();
         } catch (SQLException e) {
             System.err.println(e.getMessage());
-            return false;
+            request = false;
         }
+        String idquery = "SELECT `id` FROM `Partie` WHERE `code_numerique` = ?";
+        PreparedStatement idStatement;
+        try {
+            idStatement = polyNames.prepareStatement(idquery);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            idStatement = null;
+        }
+        try {
+            idStatement.setInt(1, code_partie);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        int idPartie = -1;
+        try {
+            ResultSet myResults = idStatement.executeQuery();
+            while(myResults.next()){
+                idPartie = myResults.getInt("id");
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        String cardquery = "INSERT INTO `Carte` (mot, couleur, partie) SELECT `mot`, 1, ? FROM `Mot` ORDER BY RAND() LIMIT 25;";
+        PreparedStatement cardStatement;
+        try {
+            cardStatement = polyNames.prepareStatement(cardquery);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            cardStatement = null;
+        }
+        try {
+            cardStatement.setInt(1, idPartie);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        boolean card;
+        try {
+            card = cardStatement.execute();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            card = false;
+        }
+        return card;
     }
 }

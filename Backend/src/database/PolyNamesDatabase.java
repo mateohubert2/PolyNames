@@ -4,6 +4,6 @@ import java.sql.SQLException;
 
 public class PolyNamesDatabase extends MySQLDatabase{
     public PolyNamesDatabase() throws SQLException{
-        super("localhost", 3307, "PolyNames", "mateo", "esirem");
+        super("localhost", 3306, "PolyNamesBDD", "mateo", "esirem");
     }
 }
