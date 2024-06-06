@@ -78,7 +78,7 @@ public class GameController {
         gameDAO.createGame(codePartie, nom);
         boolean create = gameDAO.isGame(codePartie);
         if(create){
-            response.ok("La partie à été crée");
+            response.json(codePartie);
         }
         else{
             response.notFound("La partie n'a pas été crée");

@@ -21,12 +21,47 @@ export class GameService {
     static async createGame(nom){
         const response = await fetch("http://localhost:8080/creategame/"+nom);
         if(response.status === 200){
-            console.log("La partie a été créer");
-            return true;
+            const data = response.json();
+            return data;
         }
         else{
             console.log("La partie n'a pas été créer");
-            return false;
         }
+    }
+    static afficher(data){
+        const titrePartie = document.querySelector(".titre");
+        titrePartie.innerHTML = "Vous êtes sur la partie de: " + data["game"].code_perso;
+        for(let i = 0; i < data["cards"].length; i++){
+            const cartes = document.querySelector(".cards");
+            const carte = document.createElement("div");
+            carte.classList.add("card");
+            carte.innerHTML = data["cards"][i].mot;
+            cartes.appendChild(carte);
+        }
+    }
+    static async charger(codePartie){
+        GameService.findGame(codePartie).then((isGame) => {
+            if(isGame){
+                GameService.loadGame(codePartie).then((data) => {
+                    if(data){
+                        GameService.afficher(data);
+                        const code = document.querySelector(".code");
+                        const button = document.querySelector(".sendCode");
+                        code.remove();
+                        button.remove();
+                        return true;
+                    }
+                }).catch(error => {
+                    console.log("Aucune partie trouvee", error);
+                })
+            }
+            else{
+                const refus = document.querySelector(".titre");
+                refus.innerHTML = "La partie demandée n'existe pas veuillez rentrer un code valide";
+                return false;
+            }
+        }).catch(error => {
+            console.log("La partie n'existe pas", error);
+        })
     }
 }

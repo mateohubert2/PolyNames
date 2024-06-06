@@ -9,10 +9,11 @@ function run(){
     button.addEventListener("click", () => {
         const code = document.querySelector(".code");
         const nom = code.value;
-        GameService.createGame(nom).then(() => {
-            console.log("La fonction est arrivée à la fin")
+        GameService.createGame(nom).then((data) => {
+            sessionStorage.setItem("idPartie", JSON.stringify(data));
+            window.location.href = 'http://localhost:8080/rejoindre.html';
         }).catch(error => {
-            console.log("Aucune partie trouvee", error);
+            console.log("Aucune partie crée", error);
         })
         demande.remove();
         code.remove();
