@@ -405,4 +405,68 @@ public class GameDAO {
         }
         return card;
     }
+
+    public boolean connexion(String user, String hash){
+        PolyNamesDatabase polyNames;
+        boolean state = false;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        String sqlqueryCheck = "Select * FROM `Joueur` WHERE `nom` = ?;";
+        PreparedStatement myPreparedStatementCheck;
+        try {
+            myPreparedStatementCheck = polyNames.prepareStatement(sqlqueryCheck);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatementCheck = null;
+        }
+        try {
+            myPreparedStatementCheck.setString(1, user);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        String findhash = "";
+        try {
+            ResultSet myResults = myPreparedStatementCheck.executeQuery();
+            while(myResults.next()){
+                findhash = myResults.getString("hash");
+            }
+            if(findhash.equals(hash)){
+                state = true;
+            }
+            else{
+                //l'id de la partie est a 1 pour enregistrer les nouveaux joueurs en attendant qu'ils rejoignent une vraie partie
+                String sqlquery = "INSERT INTO `Joueur` (nom, hash, role, partie) VALUES (?, ?, 1, 1);";
+                PreparedStatement myPreparedStatement;
+                try {
+                    myPreparedStatement = polyNames.prepareStatement(sqlquery);
+                } catch (SQLException e) {
+                    System.err.println("Impossible de préparer la requête:");
+                    System.err.println(e.getMessage());
+                    myPreparedStatement = null;
+                }
+                try {
+                    myPreparedStatement.setString(1, user);
+                    myPreparedStatement.setString(2, hash);
+                } catch (SQLException e) {
+                    System.err.println(e.getMessage());
+                }
+                boolean request;
+                try {
+                    request = myPreparedStatement.execute();
+                    state = true;
+                } catch (SQLException e) {
+                    System.err.println(e.getMessage());
+                    state = false;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return state;
+    }
 }

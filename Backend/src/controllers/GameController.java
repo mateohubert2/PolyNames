@@ -84,4 +84,19 @@ public class GameController {
             response.notFound("La partie n'a pas été crée");
         }
     }
+
+    public static void connexion(WebServerContext context){
+        GameDAO gameDAO = new GameDAO();
+        WebServerResponse response = context.getResponse();
+        WebServerRequest request = context.getRequest();
+        String user = request.getParam("user");
+        String hash = request.getParam("hash");
+        boolean success = gameDAO.connexion(user, hash);
+        if(success){
+            response.ok("L'utilisateur à bien été chargé ou crée");
+        }
+        else{
+            response.notFound("Impossible de charger ou de créer l'utilisateur");
+        }
+    }
 }

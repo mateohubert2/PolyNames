@@ -64,4 +64,13 @@ export class GameService {
             console.log("La partie n'existe pas", error);
         })
     }
+    static async createOrLoadPlayer(utilisateur, hash){
+        const response = await fetch("http://localhost:8080/connect/"+utilisateur+"/"+hash);
+        if(response.status === 200){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }

@@ -15,5 +15,6 @@ public class App {
        webserver.getRouter().get("/view/menu-view.js", (WebServerContext context) -> { GameController.sendSpecificContent(context); });
        webserver.getRouter().get("/services/game-service.js", (WebServerContext context) -> { GameController.sendSpecificContent(context); });
        webserver.getRouter().get("/content/:gameId", (WebServerContext context) -> { GameController.getGameContent(context); });
+       webserver.getRouter().get("/connect/:user/:hash", (WebServerContext context) -> { GameController.connexion(context); });
     }
 }
