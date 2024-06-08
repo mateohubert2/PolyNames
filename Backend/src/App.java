@@ -16,5 +16,9 @@ public class App {
        webserver.getRouter().get("/services/game-service.js", (WebServerContext context) -> { GameController.sendSpecificContent(context); });
        webserver.getRouter().get("/content/:gameId", (WebServerContext context) -> { GameController.getGameContent(context); });
        webserver.getRouter().get("/connect/:user/:hash", (WebServerContext context) -> { GameController.connexion(context); });
+       webserver.getRouter().get("/setpartie/:codePartie/:user", (WebServerContext context) -> { GameController.setPartie(context); });
+       webserver.getRouter().get("/askrole/:codePartie", (WebServerContext context) -> { GameController.checkNumberOfPlayer(context); });
+       webserver.getRouter().get("/affectrole/:codePartie/:player/:role1/:role2", (WebServerContext context) -> { GameController.affectRole(context); });
+       webserver.getRouter().get("/ready/:codePartie", (WebServerContext context) -> { GameController.isReady(context); });
     }
 }

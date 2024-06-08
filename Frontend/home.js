@@ -7,6 +7,7 @@ function run(){
     titre.innerHTML = "Veuillez entrer votre nom, votre mot de passe et cocher la case pour le stocker";
     const text = document.createElement("input");
     const mdp = document.createElement("input");
+    mdp.type = "password";
     const button = document.createElement("button");
     button.innerHTML = "connexion"
     const checkboxMDP = document.createElement("input");
@@ -36,8 +37,12 @@ function run(){
         GameService.createOrLoadPlayer(utilisateur, hashed).then((success) => {
             if(success){
                 if(checked){
-                    localStorage.setItem("user", JSON.stringify(utilisateur))
+                    localStorage.setItem("user", JSON.stringify(utilisateur));
                     localStorage.setItem("mdp", JSON.stringify(motDePasse));
+                    sessionStorage.setItem("user", JSON.stringify(utilisateur));
+                }
+                else{
+                    sessionStorage.setItem("user", JSON.stringify(utilisateur));
                 }
                 titre.remove();
                 text.remove();

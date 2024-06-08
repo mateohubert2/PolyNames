@@ -1,6 +1,6 @@
 CREATE DATABASE PolyNamesBDD;
 USE PolyNamesBDD;
-CREATE TABLE `Partie` (`id` INT NOT NULL AUTO_INCREMENT, `code_numerique` INT NOT NULL, `code_perso` VARCHAR(50) NOT NULL, PRIMARY KEY(`id`));
+CREATE TABLE `Partie` (`id` INT NOT NULL AUTO_INCREMENT, `code_numerique` INT NOT NULL, `code_perso` VARCHAR(50) NOT NULL, `etat` INT NOT NULL, PRIMARY KEY(`id`));
 CREATE TABLE `Role` (`id` INT NOT NULL AUTO_INCREMENT, `role` VARCHAR(30) NOT NULL, PRIMARY KEY(`id`));
 CREATE TABLE `Joueur` (`id` INT NOT NULL AUTO_INCREMENT, `nom` VARCHAR(50) NOT NULL, `hash` VARCHAR(50) NOT NULL, `role` INT NOT NULL, `partie` INT NOT NULL, PRIMARY KEY(`id`), CONSTRAINT `fonction` FOREIGN KEY (`role`) REFERENCES `Role` (`id`), CONSTRAINT `jouer` FOREIGN KEY (`partie`) REFERENCES `Partie` (`id`));
 CREATE TABLE `Couleur` (`id` INT NOT NULL AUTO_INCREMENT, `color` VARCHAR(15) NOT NULL, PRIMARY KEY(`id`));
@@ -9,7 +9,7 @@ CREATE TABLE `Carte` (`id` INT NOT NULL AUTO_INCREMENT, `mot` VARCHAR(30) NOT NU
 INSERT INTO Couleur (color) VALUES ('gris');
 INSERT INTO Couleur (color) VALUES ('noir');
 INSERT INTO Couleur (color) VALUES ('bleu');
-INSERT INTO Partie (code_numerique, code_perso) VALUES ('1111', 'partie_temporaire_pour_les_nouveaux_joueur');
+INSERT INTO Partie (code_numerique, code_perso, etat) VALUES ('1111', 'partie_temporaire_pour_les_nouveaux_joueur', '0');
 INSERT INTO Role (role) VALUES ('MDI');
 INSERT INTO Role (role) VALUES ('MDM');
 INSERT INTO Mot (mot) VALUES ('chaise');

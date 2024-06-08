@@ -40,8 +40,9 @@ public class GameDAO {
                 int id = myResults.getInt("id");
                 int code_numerique = myResults.getInt("code_numerique");
                 String code_perso = myResults.getString("code_perso");
-                Game product = new Game(id, code_numerique, code_perso);
-                games.add(product);
+                int etat = myResults.getInt("etat");
+                Game game = new Game(id, code_numerique, code_perso, etat);
+                games.add(game);
             }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
@@ -78,7 +79,8 @@ public class GameDAO {
                 int id = myResults.getInt("id");
                 int code_numerique = myResults.getInt("code_numerique");
                 String code_perso = myResults.getString("code_perso");
-                game = new Game(id, code_numerique, code_perso);
+                int etat = myResults.getInt("etat");
+                game = new Game(id, code_numerique, code_perso, etat);
             }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
@@ -339,7 +341,7 @@ public class GameDAO {
             System.err.println(e.getMessage());
             polyNames = null;
         }
-        String sqlquery = "INSERT INTO `Partie` (code_numerique, code_perso) VALUES (?, ?);";
+        String sqlquery = "INSERT INTO `Partie` (code_numerique, code_perso, etat) VALUES (?, ?, 0);";
         PreparedStatement myPreparedStatement;
         try {
             myPreparedStatement = polyNames.prepareStatement(sqlquery);
@@ -468,5 +470,256 @@ public class GameDAO {
             System.err.println(e.getMessage());
         }
         return state;
+    }
+    public boolean setPartie(int codePartie, String user){
+        PolyNamesDatabase polyNames;
+        boolean set = false;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        String sqlqueryForId = "SELECT `id` FROM `Partie` WHERE `code_numerique` = ?;";
+        PreparedStatement myPreparedStatementForId;
+        try {
+            myPreparedStatementForId = polyNames.prepareStatement(sqlqueryForId);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatementForId = null;
+        }
+        try {
+            myPreparedStatementForId.setInt(1, codePartie);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        int idPartie = 0;
+        try {
+            ResultSet myResults = myPreparedStatementForId.executeQuery();
+            while(myResults.next()){
+                idPartie = myResults.getInt("id");
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        String sqlquery = "UPDATE `Joueur` SET `partie` = ? WHERE `nom` = ?;";
+        PreparedStatement myPreparedStatement;
+        try {
+            myPreparedStatement = polyNames.prepareStatement(sqlquery);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatement = null;
+        }
+        try {
+            System.out.println(idPartie);
+            System.out.println(user);
+            myPreparedStatement.setInt(1, idPartie);
+            myPreparedStatement.setString(2, user);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        try {
+            set = myPreparedStatement.execute();
+            set = true;
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            set = false;
+        }
+        return set;
+    }
+    public boolean checkNumberOfPlayer(int codePartie){
+        PolyNamesDatabase polyNames;
+        boolean enough = false;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        String sqlqueryForId = "SELECT `id` FROM `Partie` WHERE `code_numerique` = ?;";
+        PreparedStatement myPreparedStatementForId;
+        try {
+            myPreparedStatementForId = polyNames.prepareStatement(sqlqueryForId);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatementForId = null;
+        }
+        try {
+            myPreparedStatementForId.setInt(1, codePartie);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        int idPartie = 0;
+        try {
+            ResultSet myResults = myPreparedStatementForId.executeQuery();
+            while(myResults.next()){
+                idPartie = myResults.getInt("id");
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        String sqlquery = "SELECT COUNT(*) AS number FROM `Joueur` WHERE `partie` = ?;";
+        PreparedStatement myPreparedStatement;
+        try {
+            myPreparedStatement = polyNames.prepareStatement(sqlquery);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatement = null;
+        }
+        try {
+            myPreparedStatement.setInt(1, idPartie);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        int number = 0;
+        try {
+            ResultSet myResults = myPreparedStatement.executeQuery();
+            while(myResults.next()){
+                number = myResults.getInt("number");
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        if(number == 2){
+            enough = true;
+        }
+        else{
+            enough = false;
+        }
+        return enough;
+    }
+    public boolean affectRole(int codePartie, String player, int role1, int role2){
+        PolyNamesDatabase polyNames;
+        int totalAffect = 0;
+        boolean affected = false;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        String sqlqueryForId = "SELECT `id` FROM `Partie` WHERE `code_numerique` = ?;";
+        PreparedStatement myPreparedStatementForId;
+        try {
+            myPreparedStatementForId = polyNames.prepareStatement(sqlqueryForId);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatementForId = null;
+        }
+        try {
+            myPreparedStatementForId.setInt(1, codePartie);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        int idPartie = 0;
+        try {
+            ResultSet myResults = myPreparedStatementForId.executeQuery();
+            while(myResults.next()){
+                idPartie = myResults.getInt("id");
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        ArrayList<Player> players = this.findPlayer(idPartie);
+        for(int i = 0; i < players.size(); i++){
+            String sqlquery = "UPDATE `Joueur` SET `role` = ? WHERE `nom` = ?;";
+            PreparedStatement myPreparedStatement;
+            try {
+                myPreparedStatement = polyNames.prepareStatement(sqlquery);
+            } catch (SQLException e) {
+                System.err.println("Impossible de préparer la requête:");
+                System.err.println(e.getMessage());
+                myPreparedStatement = null;
+            }
+            System.out.println(player);
+            System.out.println(role1);
+            System.out.println(role2);
+            try {
+                if(players.get(i).nom().equals(player)){
+                    myPreparedStatement.setInt(1, role1);
+                    myPreparedStatement.setString(2, players.get(i).nom());
+                }
+                else{
+                    myPreparedStatement.setInt(1, role2);
+                    myPreparedStatement.setString(2, players.get(i).nom());
+                }
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
+            }
+            try {
+                affected = myPreparedStatement.execute();
+                totalAffect++;
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
+            }
+        }
+        if(totalAffect == 2){
+            String sqlqueryToSetReady = "UPDATE `Partie` SET `etat` = 1 WHERE `id` = ?;";
+            PreparedStatement myPreparedStatementToSetReady;
+            try {
+                myPreparedStatementToSetReady = polyNames.prepareStatement(sqlqueryToSetReady);
+            } catch (SQLException e) {
+                System.err.println("Impossible de préparer la requête:");
+                System.err.println(e.getMessage());
+                myPreparedStatementToSetReady = null;
+            }
+            try {
+                myPreparedStatementToSetReady.setInt(1, idPartie);
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
+            }
+            try {
+                affected = myPreparedStatementToSetReady.execute();
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
+            }
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    public boolean isReady(int codePartie){
+        PolyNamesDatabase polyNames;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        String sqlqueryForId = "SELECT `etat` FROM `Partie` WHERE `code_numerique` = ?;";
+        PreparedStatement myPreparedStatementForId;
+        try {
+            myPreparedStatementForId = polyNames.prepareStatement(sqlqueryForId);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatementForId = null;
+        }
+        try {
+            myPreparedStatementForId.setInt(1, codePartie);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        int etat = 0;
+        try {
+            ResultSet myResults = myPreparedStatementForId.executeQuery();
+            while(myResults.next()){
+                etat = myResults.getInt("etat");
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        if(etat == 1){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }

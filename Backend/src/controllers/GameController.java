@@ -99,4 +99,66 @@ public class GameController {
             response.notFound("Impossible de charger ou de créer l'utilisateur");
         }
     }
+    public static void setPartie(WebServerContext context){
+        GameDAO gameDAO = new GameDAO();
+        WebServerResponse response = context.getResponse();
+        WebServerRequest request = context.getRequest();
+        String code = request.getParam("codePartie");
+        int codePartie = Integer.parseInt(code);
+        String user = request.getParam("user");
+        boolean affected = gameDAO.setPartie(codePartie, user);
+        if(affected){
+            response.ok("La partie a bien été affecté");
+        }
+        else{
+            response.notFound("La partie n'a pas été affecté");
+        }
+    }
+    public static void checkNumberOfPlayer(WebServerContext context){
+        GameDAO gameDAO = new GameDAO();
+        WebServerResponse response = context.getResponse();
+        WebServerRequest request = context.getRequest();
+        String code = request.getParam("codePartie");
+        int codePartie = Integer.parseInt(code);
+        boolean enoughPlayer = gameDAO.checkNumberOfPlayer(codePartie);
+        if(enoughPlayer){
+            response.ok("Il y a assez de joueurs dans la partie");
+        }
+        else{
+            response.notFound("Il n'y pas assez de joueurs dans la partie");
+        }
+    }
+    public static void affectRole(WebServerContext context){
+        GameDAO gameDAO = new GameDAO();
+        WebServerResponse response = context.getResponse();
+        WebServerRequest request = context.getRequest();
+        String code = request.getParam("codePartie");
+        int codePartie = Integer.parseInt(code);
+        String player = request.getParam("player");
+        String role_1 = request.getParam("role1");
+        int role1 = Integer.parseInt(role_1);
+        String role_2 = request.getParam("role2");
+        int role2 = Integer.parseInt(role_2);
+        boolean affected = gameDAO.affectRole(codePartie, player, role1, role2);
+        if(affected){
+            response.ok("Il y a assez de joueurs dans la partie");
+        }
+        else{
+            response.notFound("Il n'y pas assez de joueurs dans la partie");
+        }
+    }
+    public static void isReady(WebServerContext context){
+        GameDAO gameDAO = new GameDAO();
+        WebServerResponse response = context.getResponse();
+        WebServerRequest request = context.getRequest();
+        String code = request.getParam("codePartie");
+        int codePartie = Integer.parseInt(code);
+        boolean ready = gameDAO.isReady(codePartie);
+        if(ready){
+            response.ok("La partie est prete");
+        }
+        else{
+            response.notFound("La parti n'est pas prete");
+        }
+    }
 }
