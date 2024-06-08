@@ -30,7 +30,7 @@ export class GameService {
     }
     static afficher(data){
         const titrePartie = document.querySelector(".titre");
-        titrePartie.innerHTML = "Vous êtes sur la partie de: " + data["game"].code_perso;
+        titrePartie.innerHTML = "Vous êtes sur la partie de: " + data["game"].code_perso + ". Voici le code de la partie: " + data["game"].code_numerique;
         for(let i = 0; i < data["cards"].length; i++){
             const cartes = document.querySelector(".cards");
             const carte = document.createElement("div");
