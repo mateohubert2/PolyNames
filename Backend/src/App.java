@@ -23,5 +23,8 @@ public class App {
        webserver.getRouter().get("/checkrole/:codePartie", (WebServerContext context) -> { GameController.checkRole(context); });
        webserver.getRouter().get("/setcolor/:color/:idCarte", (WebServerContext context) -> { GameController.setColor(context); });
        webserver.getRouter().get("/getrole/:codePartie/:player", (WebServerContext context) -> { GameController.getRole(context); });
+       webserver.getRouter().get("/checkcolor/:codePartie/:mot", (WebServerContext context) -> { GameController.checkColor(context); });
+
+       webserver.getRouter().post("/mot/:word", (WebServerContext context) -> { GameController.sendWord(context); });
     }
 }

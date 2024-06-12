@@ -898,4 +898,62 @@ public class GameDAO {
             return false;
         }
     }
+    public int checkRole(int codePartie, String mot){
+        PolyNamesDatabase polyNames;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        String sqlqueryForId = "SELECT `id` FROM `Partie` WHERE `code_numerique` = ?;";
+        PreparedStatement myPreparedStatementForId;
+        try {
+            myPreparedStatementForId = polyNames.prepareStatement(sqlqueryForId);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatementForId = null;
+        }
+        try {
+            myPreparedStatementForId.setInt(1, codePartie);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        int id = 0;
+        try {
+            ResultSet myResults = myPreparedStatementForId.executeQuery();
+            while(myResults.next()){
+                id = myResults.getInt("id");
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        String sqlquery = "SELECT `couleur` FROM `Carte` WHERE `partie` = ? AND `mot` = ?;";
+        PreparedStatement myPreparedStatement;
+        try {
+            myPreparedStatement = polyNames.prepareStatement(sqlquery);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatement = null;
+        }
+        try {
+            myPreparedStatement.setInt(1, id);
+            myPreparedStatement.setString(2, mot);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        int couleur = 0;
+        try {
+            ResultSet myResults = myPreparedStatement.executeQuery();
+            while(myResults.next()){
+                couleur = myResults.getInt("couleur");
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return couleur;
+    }
 }

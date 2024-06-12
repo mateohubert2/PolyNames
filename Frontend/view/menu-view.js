@@ -7,6 +7,7 @@ export class MenuView {
         menu.appendChild(titre);
 
         let creer = document.createElement("button");
+        creer.classList.add("button");
         creer.innerHTML = "Créer une partie";
         menu.appendChild(creer);
         creer.addEventListener('click', () => {
@@ -14,6 +15,7 @@ export class MenuView {
         });
 
         let rejoindre = document.createElement("button");
+        rejoindre.classList.add("button");
         rejoindre.innerHTML = "Rejoindre une partie";
         menu.appendChild(rejoindre);
         rejoindre.addEventListener('click', () => {

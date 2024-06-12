@@ -5,6 +5,7 @@ function run(){
     titrePartie.appendChild(demande);
     demande.innerHTML = "Veuillez rentrer le code numérique de la partie que vous voulez rejoindre";
     const button = document.querySelector(".sendCode");
+    button.classList.add("button");
     let codePartieStorage = sessionStorage.getItem("codePartie");
     if(codePartieStorage !== null){
         codePartieStorage = codePartieStorage.replace(/^"|"$/g, '');
@@ -24,7 +25,7 @@ function run(){
         });
     }
     button.addEventListener("click", () => {
-        const code = document.querySelector(".code");
+        const code = document.querySelector(".text");
         const codePartie = code.value;
         sessionStorage.setItem("codePartie", JSON.stringify(codePartie));
         GameService.charger(codePartie).then((supp) => {

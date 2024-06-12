@@ -6,9 +6,12 @@ function run(){
     const titre = document.createElement("h1");
     titre.innerHTML = "Veuillez entrer votre nom, votre mot de passe et cocher la case pour le stocker";
     const text = document.createElement("input");
+    text.classList.add("text");
     const mdp = document.createElement("input");
+    mdp.classList.add("text");
     mdp.type = "password";
     const button = document.createElement("button");
+    button.classList.add("button");
     button.innerHTML = "connexion"
     const checkboxMDP = document.createElement("input");
     checkboxMDP.type = "checkbox";

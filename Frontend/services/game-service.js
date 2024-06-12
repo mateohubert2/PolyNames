@@ -1,3 +1,5 @@
+import { SSEClient } from "../sse-client.js";
+
 export class GameService {
     static async loadGame(id_partie){
         const response = await fetch("http://localhost:8080/content/"+id_partie);
@@ -49,12 +51,45 @@ export class GameService {
                 role = role.replace(/^"|"$/g, '');
             }
             if(role === "MDM"){
+                const word = document.createElement("input");
+                word.classList.add("text");
+                word.value = "indice";
+                const number = document.createElement("input");
+                number.classList.add("text1");
+                number.value = "nombre de mots";
+                const button = document.createElement("button");
+                button.classList.add("button");
+                button.innerHTML = "Envoyer le mot";
+                const body = document.querySelector("body");
+                const plateau = document.querySelector(".plateau");
+                body.insertBefore(word, plateau);
+                body.insertBefore(number, plateau);
+                body.insertBefore(button, plateau);
+                button.addEventListener("click", () => {
+                    let clickable = sessionStorage.getItem("clickable");
+                    if(clickable !== null){
+                        clickable = clickable.replace(/^"|"$/g, '');
+                    }
+                    if(clickable === "true"){
+                    const word = document.querySelector(".text");
+                    const mot = word.value;
+                    const number = document.querySelector(".text1");
+                    const nombre = number.value;
+                    GameService.sendWord(mot);
+                    GameService.sendWord(nombre);
+                    sessionStorage.setItem("clickable", JSON.stringify("false"));
+                    }
+                });
                 for(let i = 0; i < data["cards"].length; i++){
                     const cartes = document.querySelector(".cards");
                     const carte = document.createElement("div");
                     carte.classList = "card"+data["cards"][cardMixIndex[i]].couleur;
                     carte.innerHTML = data["cards"][cardMixIndex[i]].mot;
                     cartes.appendChild(carte);
+                }
+                const clickable = sessionStorage.getItem("clickable");
+                if(clickable === null){
+                    sessionStorage.setItem("clickable", JSON.stringify("true"));
                 }
             }
             else{
@@ -63,8 +98,40 @@ export class GameService {
                     const carte = document.createElement("div");
                     carte.classList = "card";
                     carte.innerHTML = data["cards"][cardMixIndex[i]].mot;
+                    carte.addEventListener("click", () => {
+                        const mot = carte.innerHTML;
+                        let codePartie = sessionStorage.getItem("codePartie");
+                        codePartie = codePartie.replace(/^"|"$/g, '');
+                        GameService.checkColorAndEvoleTheGame(codePartie, mot).then((value) => {
+                            console.log(value);
+                            if(value === 1){
+                                carte.classList = "card1";
+                                console.log("point");
+                            }
+                            if(value === 2){
+                                carte.classList = "card2";
+                                console.log("pas de point");
+                            }
+                            if(value === 3){
+                                carte.classList = "card3";
+                                console.log("perdu");
+                            }
+                        });
+                    });
                     cartes.appendChild(carte);
                 }
+                const sseClient = new SSEClient("localhost:8080");
+                sseClient.connect();
+                let compteur = 0;
+                const idSEE = setTimeout(() => {
+                    sseClient.subscribe("mot", (word) => {
+                        GameService.displayWord(word);
+                    });
+                    compteur++;
+                    if(compteur > 5){
+                        clearInterval(idSEE);
+                    }
+                }, 1000);
             }
         }
         else{
@@ -74,12 +141,45 @@ export class GameService {
             }
             const game = JSON.parse(sessionStorage.getItem("game"));
             if(role === "MDM"){
+                const word = document.createElement("input");
+                word.classList.add("text");
+                word.value = "indice";
+                const number = document.createElement("input");
+                number.classList.add("text1");
+                number.value = "nombre de mots";
+                const button = document.createElement("button");
+                button.classList.add("button");
+                button.innerHTML = "Envoyer le mot";
+                const body = document.querySelector("body");
+                const plateau = document.querySelector(".plateau");
+                body.insertBefore(word, plateau);
+                body.insertBefore(number, plateau);
+                body.insertBefore(button, plateau);
+                button.addEventListener("click", () => {
+                    let clickable = sessionStorage.getItem("clickable");
+                    if(clickable !== null){
+                        clickable = clickable.replace(/^"|"$/g, '');
+                    }
+                    if(clickable === "true"){
+                    const word = document.querySelector(".text");
+                    const mot = word.value;
+                    const number = document.querySelector(".text1");
+                    const nombre = number.value;
+                    GameService.sendWord(mot);
+                    GameService.sendWord(nombre);
+                    sessionStorage.setItem("clickable", JSON.stringify("false"));
+                    }
+                });
                 for(let i = 0; i < data["cards"].length; i++){
                     const cartes = document.querySelector(".cards");
                     const carte = document.createElement("div");
                     carte.classList = "card"+data["cards"][game[i]].couleur;
                     carte.innerHTML = data["cards"][game[i]].mot;
                     cartes.appendChild(carte);
+                }
+                const clickable = sessionStorage.getItem("clickable");
+                if(clickable === null){
+                    sessionStorage.setItem("clickable", JSON.stringify("true"));
                 }
             }
             else{
@@ -88,8 +188,33 @@ export class GameService {
                     const carte = document.createElement("div");
                     carte.classList = "card";
                     carte.innerHTML = data["cards"][game[i]].mot;
+                    carte.addEventListener("click", () => {
+                        const mot = carte.innerHTML;
+                        let codePartie = sessionStorage.getItem("codePartie");
+                        codePartie = codePartie.replace(/^"|"$/g, '');
+                        GameService.checkColorAndEvoleTheGame(codePartie, mot).then((value) => {
+                            console.log(value);
+                            if(value === 1){
+                                carte.classList = "card1";
+                                console.log("point");
+                            }
+                            if(value === 2){
+                                carte.classList = "card2";
+                                console.log("pas de point");
+                            }
+                            if(value === 3){
+                                carte.classList = "card3";
+                                console.log("perdu");
+                            }
+                        });
+                    });
                     cartes.appendChild(carte);
                 }
+                const sseClient = new SSEClient("localhost:8080");
+                sseClient.connect();
+                sseClient.subscribe("mot", (word) => {
+                    GameService.displayWord(word);
+                });
             }
         }
     }
@@ -103,8 +228,8 @@ export class GameService {
                             block = block.replace(/^"|"$/g, '');
                         }
                         if(block === "true"){
-                            const code = document.querySelector(".code");
-                            const button = document.querySelector(".sendCode");
+                            const code = document.querySelector(".text");
+                            const button = document.querySelector(".button");
                             code.remove();
                             button.remove();
                             GameService.getRole().then((MAJ) => {
@@ -124,8 +249,8 @@ export class GameService {
                             isMaster = isMaster.replace(/^"|"$/g, '');
                         }
                         if(isMaster === "true"){
-                            const code = document.querySelector(".code");
-                            const button = document.querySelector(".sendCode");
+                            const code = document.querySelector(".text");
+                            const button = document.querySelector(".button");
                             code.remove();
                             button.remove();
                             let validator = 0;
@@ -135,12 +260,12 @@ export class GameService {
                                     player = player.replace(/^"|"$/g, '');
                                     GameService.affectRole(codePartie, player, 1, 1).then(() => {
                                         GameService.displayWaitingScreen(data);
-                                        let affected = false;
-                                        setInterval((() => {
+                                        let intervalId = setInterval((() => {
                                             GameService.askRole(codePartie).then((correctNumberOfPlayer) => {
                                                 if((correctNumberOfPlayer)&&(validator === 0)){
                                                     validator = 1;
                                                     GameService.displayRole(data);
+                                                    clearInterval(intervalId);
                                                 }
                                             })
                                         }), 2000);
@@ -153,8 +278,8 @@ export class GameService {
                             }
                         }
                         else{
-                            const code = document.querySelector(".code");
-                            const button = document.querySelector(".sendCode");
+                            const code = document.querySelector(".text");
+                            const button = document.querySelector(".button");
                             code.remove();
                             button.remove();
                             let validator = 0;
@@ -164,7 +289,7 @@ export class GameService {
                                     player = player.replace(/^"|"$/g, '');
                                     GameService.affectRole(codePartie, player, 1, 1).then(() => {
                                         sessionStorage.setItem("codePartie", JSON.stringify(codePartie));
-                                        setInterval((() => {
+                                        let intervalId = setInterval((() => {
                                             GameService.checkRole(codePartie).then((correctRole) => {
                                                 if((correctRole)&&(validator === 0)){
                                                     validator = 1;
@@ -179,6 +304,7 @@ export class GameService {
                                                             GameService.afficher(data);
                                                             sessionStorage.setItem("block", JSON.stringify("true"));
                                                         }
+                                                        clearInterval(intervalId);
                                                     });
                                                 }
                                             })
@@ -289,7 +415,7 @@ export class GameService {
         MDI.classList.add("mdi");
         MDI.innerHTML = "Maitre des intuitions";
         const random = document.createElement("button");
-        random.classList.add("Random");
+        random.classList.add("random");
         random.innerHTML = "Random";
         const titrePartie = document.querySelector(".titre");
         titrePartie.innerHTML = "Vous êtes sur la partie de: " + data["game"].code_perso + ". Voici le code de la partie: " + data["game"].code_numerique;
@@ -472,6 +598,25 @@ export class GameService {
         }
         else{
             return false;
+        }
+    }
+    static async sendWord(word){
+        const response = await fetch("http://localhost:8080/mot/"+word, {method: "POST"});
+    }
+    static displayWord(word){
+        const indice = document.createElement("div");
+        indice.classList.add("indice");
+        indice.innerHTML = word;
+        const plateau = document.querySelector(".plateau");
+        const body = document.querySelector("body");
+        body.insertBefore(indice, plateau);
+        console.log(word);
+    }
+    static async checkColorAndEvoleTheGame(codePartie, mot){
+        const response = await fetch("http://localhost:8080/checkcolor/"+codePartie+"/"+mot);
+        if(response.status === 200){
+            const valeur = response.json();
+            return valeur;
         }
     }
 }

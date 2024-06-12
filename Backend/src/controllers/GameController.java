@@ -206,4 +206,20 @@ public class GameController {
             response.notFound("Le role n'est pas MDM donc les données ne doivent pas changer");
         }
     }
+    public static void sendWord(WebServerContext context){
+        WebServerRequest request = context.getRequest();
+        String word = request.getParam("word");
+        context.getSSE().emit("mot", word);
+    }
+    public static void checkColor(WebServerContext context){
+        GameDAO gameDAO = new GameDAO();
+        WebServerRequest request = context.getRequest();
+        WebServerResponse response = context.getResponse();
+        String mot = request.getParam("mot");
+        String code = request.getParam("codePartie");
+        int codePartie = Integer.parseInt(code);
+        int valeur = gameDAO.checkRole(codePartie, mot);
+        context.getSSE().emit("point", valeur);
+        response.json(valeur);
+    }
 }
