@@ -191,4 +191,19 @@ public class GameController {
             response.notFound("La couleur n'est pas affectée");
         }
     }
+    public static void getRole(WebServerContext context){
+        GameDAO gameDAO = new GameDAO();
+        WebServerResponse response = context.getResponse();
+        WebServerRequest request = context.getRequest();
+        String code = request.getParam("codePartie");
+        int codePartie = Integer.parseInt(code);
+        String player = request.getParam("player");
+        boolean colorSet = gameDAO.getRole(codePartie, player);
+        if(colorSet){
+            response.ok("Le role est MDM donc les données doivent être mis a jour");
+        }
+        else{
+            response.notFound("Le role n'est pas MDM donc les données ne doivent pas changer");
+        }
+    }
 }

@@ -31,12 +31,66 @@ export class GameService {
     static afficher(data){
         const titrePartie = document.querySelector(".titre");
         titrePartie.innerHTML = "Vous êtes sur la partie de: " + data["game"].code_perso + ". Voici le code de la partie: " + data["game"].code_numerique;
-        for(let i = 0; i < data["cards"].length; i++){
-            const cartes = document.querySelector(".cards");
-            const carte = document.createElement("div");
-            carte.classList.add("card");
-            carte.innerHTML = data["cards"][i].mot;
-            cartes.appendChild(carte);
+        let block = sessionStorage.getItem("block");
+        if(block !== null){
+            block = block.replace(/^"|"$/g, '');
+        }
+        if(block !== "true"){
+            const cardMix = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
+            const cardMixIndex = [];
+            for(let i = 0; i < data["cards"].length; i++){
+                let index = Math.floor(Math.random() * (cardMix.length-1));
+                cardMixIndex.push(cardMix[index]);
+                cardMix.splice(index, 1);
+            }
+            sessionStorage.setItem("game", JSON.stringify(cardMixIndex));
+            let role = sessionStorage.getItem("role");
+            if(role !== null){
+                role = role.replace(/^"|"$/g, '');
+            }
+            if(role === "MDM"){
+                for(let i = 0; i < data["cards"].length; i++){
+                    const cartes = document.querySelector(".cards");
+                    const carte = document.createElement("div");
+                    carte.classList = "card"+data["cards"][cardMixIndex[i]].couleur;
+                    carte.innerHTML = data["cards"][cardMixIndex[i]].mot;
+                    cartes.appendChild(carte);
+                }
+            }
+            else{
+                for(let i = 0; i < data["cards"].length; i++){
+                    const cartes = document.querySelector(".cards");
+                    const carte = document.createElement("div");
+                    carte.classList = "card";
+                    carte.innerHTML = data["cards"][cardMixIndex[i]].mot;
+                    cartes.appendChild(carte);
+                }
+            }
+        }
+        else{
+            let role = sessionStorage.getItem("role");
+            if(role !== null){
+                role = role.replace(/^"|"$/g, '');
+            }
+            const game = JSON.parse(sessionStorage.getItem("game"));
+            if(role === "MDM"){
+                for(let i = 0; i < data["cards"].length; i++){
+                    const cartes = document.querySelector(".cards");
+                    const carte = document.createElement("div");
+                    carte.classList = "card"+data["cards"][game[i]].couleur;
+                    carte.innerHTML = data["cards"][game[i]].mot;
+                    cartes.appendChild(carte);
+                }
+            }
+            else{
+                for(let i = 0; i < data["cards"].length; i++){
+                    const cartes = document.querySelector(".cards");
+                    const carte = document.createElement("div");
+                    carte.classList = "card";
+                    carte.innerHTML = data["cards"][game[i]].mot;
+                    cartes.appendChild(carte);
+                }
+            }
         }
     }
     static async charger(codePartie){
@@ -53,7 +107,16 @@ export class GameService {
                             const button = document.querySelector(".sendCode");
                             code.remove();
                             button.remove();
-                            GameService.afficher(data);
+                            GameService.getRole().then((MAJ) => {
+                                if(MAJ){
+                                    GameService.loadGame(codePartie).then((dataMAJ) => {
+                                        GameService.afficher(dataMAJ);
+                                    })
+                                }
+                                else{
+                                    GameService.afficher(data);
+                                }
+                            });
                             return true;
                         }
                         let isMaster = sessionStorage.getItem("master");
@@ -66,23 +129,28 @@ export class GameService {
                             code.remove();
                             button.remove();
                             let validator = 0;
-                            GameService.setPartie(codePartie).then(() => {
-                                let player = sessionStorage.getItem("user");
-                                player = player.replace(/^"|"$/g, '');
-                                GameService.affectRole(codePartie, player, 1, 1).then(() => {
-                                    GameService.displayWaitingScreen(data);
-                                    let affected = false;
-                                    setInterval((() => {
-                                        GameService.askRole(codePartie).then((correctNumberOfPlayer) => {
-                                            if((correctNumberOfPlayer)&&(validator === 0)){
-                                                validator = 1;
-                                                GameService.displayRole(data);
-                                                clearInterval();
-                                            }
-                                        })
-                                    }), 2000);
-                                })
-                            })
+                            if(block !== "true"){
+                                GameService.setPartie(codePartie).then(() => {
+                                    let player = sessionStorage.getItem("user");
+                                    player = player.replace(/^"|"$/g, '');
+                                    GameService.affectRole(codePartie, player, 1, 1).then(() => {
+                                        GameService.displayWaitingScreen(data);
+                                        let affected = false;
+                                        setInterval((() => {
+                                            GameService.askRole(codePartie).then((correctNumberOfPlayer) => {
+                                                if((correctNumberOfPlayer)&&(validator === 0)){
+                                                    validator = 1;
+                                                    GameService.displayRole(data);
+                                                }
+                                            })
+                                        }), 2000);
+                                    })
+                                });
+                            }
+                            else{
+                                GameService.afficher(data);
+                                sessionStorage.setItem("block", JSON.stringify("true"));
+                            }
                         }
                         else{
                             const code = document.querySelector(".code");
@@ -90,22 +158,38 @@ export class GameService {
                             code.remove();
                             button.remove();
                             let validator = 0;
-                            GameService.setPartie(codePartie).then(() => {
-                                let player = sessionStorage.getItem("user");
-                                player = player.replace(/^"|"$/g, '');
-                                GameService.affectRole(codePartie, player, 1, 1).then(() => {
-                                    sessionStorage.setItem("codePartie", JSON.stringify(codePartie));
-                                    setInterval((() => {
-                                        GameService.checkRole(codePartie).then((correctRole) => {
-                                            if((correctRole)&&(validator === 0)){
-                                                validator = 1;
-                                                GameService.afficher(data);
-                                                clearInterval();
-                                            }
-                                        })
-                                    }), 2000);
-                                })
-                            })
+                            if(block !== "true"){
+                                GameService.setPartie(codePartie).then(() => {
+                                    let player = sessionStorage.getItem("user");
+                                    player = player.replace(/^"|"$/g, '');
+                                    GameService.affectRole(codePartie, player, 1, 1).then(() => {
+                                        sessionStorage.setItem("codePartie", JSON.stringify(codePartie));
+                                        setInterval((() => {
+                                            GameService.checkRole(codePartie).then((correctRole) => {
+                                                if((correctRole)&&(validator === 0)){
+                                                    validator = 1;
+                                                    GameService.getRole().then((MAJ) => {
+                                                        if(MAJ){
+                                                            GameService.loadGame(codePartie).then((dataMAJ) => {
+                                                                GameService.afficher(dataMAJ);
+                                                                sessionStorage.setItem("block", JSON.stringify("true"));
+                                                            })
+                                                        }
+                                                        else{
+                                                            GameService.afficher(data);
+                                                            sessionStorage.setItem("block", JSON.stringify("true"));
+                                                        }
+                                                    });
+                                                }
+                                            })
+                                        }), 2000);
+                                    })
+                                });
+                            }
+                            else{
+                                GameService.afficher(data);
+                                sessionStorage.setItem("block", JSON.stringify("true"));
+                            }
                         }
                     }
                 }).catch(error => {
@@ -222,14 +306,25 @@ export class GameService {
             const role2 = 1;
             GameService.affectRole(codePartie, player, role1, role2).then((isSet) => {
                 if(isSet){
-                    sessionStorage.setItem("block", JSON.stringify("true"));
                     console.log("Les roles sont affectés");
                     MDM.remove();
                     MDI.remove();
                     random.remove();
-                    GameService.afficher(data);
-                    GameService.setColorCard(data);
-                    return true;
+                    GameService.setColorCard(data).then(() => {
+                        GameService.getRole().then((MAJ) => {
+                            if(MAJ){
+                                GameService.loadGame(codePartie).then((dataMAJ) => {
+                                    GameService.afficher(dataMAJ);
+                                    sessionStorage.setItem("block", JSON.stringify("true"));
+                                })
+                            }
+                            else{
+                                GameService.afficher(data);
+                                sessionStorage.setItem("block", JSON.stringify("true"));
+                            }
+                            return true;
+                        });
+                    });
                 }
             })
         })
@@ -241,20 +336,31 @@ export class GameService {
             const role2 = 2;
             GameService.affectRole(codePartie, player, role1, role2).then((isSet) => {
                 if(isSet){
-                    sessionStorage.setItem("block", JSON.stringify("true"));
                     console.log("Les roles sont affectés");
                     MDM.remove();
                     MDI.remove();
                     random.remove();
-                    GameService.afficher(data);
-                    GameService.setColorCard(data);
-                    return true;
+                    GameService.setColorCard(data).then(() => {
+                        GameService.getRole().then((MAJ) => {
+                            if(MAJ){
+                                GameService.loadGame(codePartie).then((dataMAJ) => {
+                                    GameService.afficher(dataMAJ);
+                                    sessionStorage.setItem("block", JSON.stringify("true"));
+                                })
+                            }
+                            else{
+                                GameService.afficher(data);
+                                sessionStorage.setItem("block", JSON.stringify("true"));
+                            }
+                            return true;
+                        });
+                    });
                 }
             })
         })
         random.addEventListener("click", () => {
-            sessionStorage.setItem("block", JSON.stringify("true"));
-            const codePartie = sessionStorage.getItem("codePartie");
+            let codePartie = sessionStorage.getItem("codePartie");
+            codePartie = codePartie.replace(/^"|"$/g, '');
             let player = sessionStorage.getItem("user");
             player = player.replace(/^"|"$/g, '');
             const role1 = Math.floor(Math.random() * 2) + 1;
@@ -271,9 +377,21 @@ export class GameService {
                     MDM.remove();
                     MDI.remove();
                     random.remove();
-                    GameService.afficher(data);
-                    GameService.setColorCard(data);
-                    return true;
+                    GameService.setColorCard(data).then(() => {
+                        GameService.getRole().then((MAJ) => {
+                            if(MAJ){
+                                GameService.loadGame(codePartie).then((dataMAJ) => {
+                                    GameService.afficher(dataMAJ);
+                                    sessionStorage.setItem("block", JSON.stringify("true"));
+                                })
+                            }
+                            else{
+                                GameService.afficher(data);
+                                sessionStorage.setItem("block", JSON.stringify("true"));
+                            }
+                            return true;
+                        });
+                    });
                 }
             })
         })
@@ -287,24 +405,22 @@ export class GameService {
             return false;
         }
     }
-    static setColorCard(data){
+    static async setColorCard(data){
         const allCardsId = [];
         for(let i = 0; i < data["cards"].length; i++){
             allCardsId.push(data["cards"][i].id);
         }
         const randomcard = [];
-        const alreadyChooseNumber = [];
         const tabWithIdToSet = [];
         for(let i = 0; i < 10; i++){
             let valide = 0;
             let condition = 0;
             let temp = 0;
             while(condition == 0){
-                condition = 0;
                 valide = 0;
                 temp = Math.floor(Math.random() * 24);
-                for(let j = 0; j < alreadyChooseNumber.length; j++){
-                    if(temp === alreadyChooseNumber[j]){
+                for(let j = 0; j < randomcard.length; j++){
+                    if(temp === randomcard[j]){
                         valide++;
                     }
                 }
@@ -312,16 +428,15 @@ export class GameService {
                     condition = 1;
                 }
             }
-            alreadyChooseNumber.push(temp);
-            randomcard.push(temp);
+        randomcard.push(temp);
         }
         for(let i = 0; i < randomcard.length; i++){
             tabWithIdToSet[i] = data["cards"][i].id;
         }
-        GameService.sendColor(tabWithIdToSet).then(() => {
+        return GameService.sendColor(tabWithIdToSet).then(() => {
             console.log("les cartes ont bien été coloré");
             }).catch((error) => {
-                console.log("les cartes ne sont pas colorés", error);
+            console.log("les cartes ne sont pas colorés", error);
         })
     }
     static async sendColor(tab){
@@ -339,6 +454,20 @@ export class GameService {
             }
         }
         if(affectation == 10){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    static async getRole(){
+        let player = sessionStorage.getItem("user");
+        let codePartie = sessionStorage.getItem("codePartie");
+        player = player.replace(/^"|"$/g, '');
+        codePartie = codePartie.replace(/^"|"$/g, '');
+        const response = await fetch("http://localhost:8080/getrole/"+codePartie+"/"+player);
+        if(response.status === 200){
+            sessionStorage.setItem("role", JSON.stringify("MDM"));
             return true;
         }
         else{

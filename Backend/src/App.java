@@ -22,5 +22,6 @@ public class App {
        webserver.getRouter().get("/ready/:codePartie", (WebServerContext context) -> { GameController.isReady(context); });
        webserver.getRouter().get("/checkrole/:codePartie", (WebServerContext context) -> { GameController.checkRole(context); });
        webserver.getRouter().get("/setcolor/:color/:idCarte", (WebServerContext context) -> { GameController.setColor(context); });
+       webserver.getRouter().get("/getrole/:codePartie/:player", (WebServerContext context) -> { GameController.getRole(context); });
     }
 }

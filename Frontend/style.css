@@ -23,7 +23,6 @@ body {
     grid-template-columns: repeat(5, 1fr);
     gap: 10px;
 }
-
 .card {
     position: relative;
 
@@ -38,7 +37,64 @@ body {
     box-sizing: border-box;
     
     border-radius: 5px;
-    background-color: #fff;
+    background-color: #ffffff;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+
+    cursor: pointer;
+}
+.card1 {
+    position: relative;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    aspect-ratio: 20/13;
+    font-size: 30px;
+
+    padding: 10px;
+    box-sizing: border-box;
+    
+    border-radius: 5px;
+    background-color: #747474;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+
+    cursor: pointer;
+}
+.card2 {
+    position: relative;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    aspect-ratio: 20/13;
+    font-size: 30px;
+
+    padding: 10px;
+    box-sizing: border-box;
+    
+    border-radius: 5px;
+    background-color: #181818;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+
+    cursor: pointer;
+}
+.card3 {
+    position: relative;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    aspect-ratio: 20/13;
+    font-size: 30px;
+
+    padding: 10px;
+    box-sizing: border-box;
+    
+    border-radius: 5px;
+    background-color: #191dff;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 
     cursor: pointer;

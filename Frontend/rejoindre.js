@@ -5,8 +5,9 @@ function run(){
     titrePartie.appendChild(demande);
     demande.innerHTML = "Veuillez rentrer le code numérique de la partie que vous voulez rejoindre";
     const button = document.querySelector(".sendCode");
-    const codePartieStorage = sessionStorage.getItem("codePartie");
+    let codePartieStorage = sessionStorage.getItem("codePartie");
     if(codePartieStorage !== null){
+        codePartieStorage = codePartieStorage.replace(/^"|"$/g, '');
         GameService.charger(codePartieStorage).then((supp) => {
             if(supp){
                 demande.remove();
