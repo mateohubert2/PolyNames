@@ -67,16 +67,20 @@ export class GameService {
                             button.remove();
                             let validator = 0;
                             GameService.setPartie(codePartie).then(() => {
-                                GameService.displayWaitingScreen(data);
-                                let affected = false;
-                                setInterval((() => {
-                                    GameService.askRole().then((correctNumberOfPlayer) => {
-                                        if((correctNumberOfPlayer)&&(validator === 0)){
-                                            validator = 1;
-                                            GameService.displayRole(data);
-                                        }
-                                    })
-                                }), 2000);
+                                let player = sessionStorage.getItem("user");
+                                player = player.replace(/^"|"$/g, '');
+                                GameService.affectRole(codePartie, player, 1, 1).then(() => {
+                                    GameService.displayWaitingScreen(data);
+                                    let affected = false;
+                                    setInterval((() => {
+                                        GameService.askRole(codePartie).then((correctNumberOfPlayer) => {
+                                            if((correctNumberOfPlayer)&&(validator === 0)){
+                                                validator = 1;
+                                                GameService.displayRole(data);
+                                            }
+                                        })
+                                    }), 2000);
+                                })
                             })
                         }
                         else{
@@ -84,8 +88,22 @@ export class GameService {
                             const button = document.querySelector(".sendCode");
                             code.remove();
                             button.remove();
+                            let validator = 0;
                             GameService.setPartie(codePartie).then(() => {
-                                GameService.afficher(data);
+                                let player = sessionStorage.getItem("user");
+                                player = player.replace(/^"|"$/g, '');
+                                GameService.affectRole(codePartie, player, 1, 1).then(() => {
+                                    sessionStorage.setItem("codePartie", JSON.stringify(codePartie));
+                                    setInterval((() => {
+                                        GameService.checkRole(codePartie).then((correctRole) => {
+                                            if((correctRole)&&(validator === 0)){
+                                                validator = 1;
+                                                GameService.afficher(data);
+                                                clearInterval();
+                                            }
+                                        })
+                                    }), 2000);
+                                })
                             })
                         }
                     }
@@ -122,9 +140,17 @@ export class GameService {
             return false;
         }
     }
-    static async askRole(){
-        const codePartie = sessionStorage.getItem("codePartie");
+    static async askRole(codePartie){
         const response = await fetch("http://localhost:8080/askrole/"+codePartie);
+        if(response.status === 200){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    static async checkRole(codePartie){
+        const response = await fetch("http://localhost:8080/checkrole/"+codePartie);
         if(response.status === 200){
             return true;
         }
@@ -149,7 +175,7 @@ export class GameService {
             titrePartie.innerHTML = "En attente du choix des roles";
             const codePartie = sessionStorage.getItem("codePartie");
             const response = await fetch("http://localhost:8080/ready/"+codePartie);
-            if (response.status === 200) {
+            if (response.status === 200){
                 return true;
             } 
             else {

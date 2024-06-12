@@ -161,4 +161,18 @@ public class GameController {
             response.notFound("La parti n'est pas prete");
         }
     }
+    public static void checkRole(WebServerContext context){
+        GameDAO gameDAO = new GameDAO();
+        WebServerResponse response = context.getResponse();
+        WebServerRequest request = context.getRequest();
+        String code = request.getParam("codePartie");
+        int codePartie = Integer.parseInt(code);
+        boolean twoRole = gameDAO.checkRole(codePartie);
+        if(twoRole){
+            response.ok("les rôles sont différents, la partie peut commencer");
+        }
+        else{
+            response.notFound("les deux joueurs ont le même rôle, la partie ne peut pas commencer");
+        }
+    }
 }
