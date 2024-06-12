@@ -10,12 +10,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-
-    /*background-color: #1f103d;*/
-}
-
-.titre {
-    background-color: #fff;
 }
 
 .cards {
@@ -56,7 +50,8 @@ body {
     box-sizing: border-box;
     
     border-radius: 5px;
-    background-color: #747474;
+    background-image: url("http://localhost:8080/gris.png");
+    background-size: 100% 100%;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 
     cursor: pointer;
@@ -75,7 +70,8 @@ body {
     box-sizing: border-box;
     
     border-radius: 5px;
-    background-color: #181818;
+    background-image: url("http://localhost:8080/noir.png");
+    background-size: 100% 100%;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 
     cursor: pointer;
@@ -94,7 +90,8 @@ body {
     box-sizing: border-box;
     
     border-radius: 5px;
-    background-color: #191dff;
+    background-image: url("http://localhost:8080/bleu.png");
+    background-size: 100% 100%;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 
     cursor: pointer;
