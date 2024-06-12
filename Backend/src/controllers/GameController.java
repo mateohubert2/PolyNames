@@ -175,4 +175,20 @@ public class GameController {
             response.notFound("les deux joueurs ont le même rôle, la partie ne peut pas commencer");
         }
     }
+    public static void setColor(WebServerContext context){
+        GameDAO gameDAO = new GameDAO();
+        WebServerResponse response = context.getResponse();
+        WebServerRequest request = context.getRequest();
+        String color = request.getParam("color");
+        int colorCarte = Integer.parseInt(color);
+        String id = request.getParam("idCarte");
+        int idCarte = Integer.parseInt(id);
+        boolean colorSet = gameDAO.setColor(colorCarte, idCarte);
+        if(colorSet){
+            response.ok("La couleur est bien affectée");
+        }
+        else{
+            response.notFound("La couleur n'est pas affectée");
+        }
+    }
 }

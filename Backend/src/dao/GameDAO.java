@@ -803,4 +803,37 @@ public class GameDAO {
             return false;
         }
     }
+    public boolean setColor(int colorCarte, int idCarte){
+        PolyNamesDatabase polyNames;
+        try {
+            polyNames = new PolyNamesDatabase();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            polyNames = null;
+        }
+        String sqlquery = "UPDATE `Carte` SET `couleur` = ? WHERE `id` = ?;";
+        PreparedStatement myPreparedStatement;
+        try {
+            myPreparedStatement = polyNames.prepareStatement(sqlquery);
+        } catch (SQLException e) {
+            System.err.println("Impossible de préparer la requête:");
+            System.err.println(e.getMessage());
+            myPreparedStatement = null;
+        }
+        try {
+            myPreparedStatement.setInt(1, colorCarte);
+            myPreparedStatement.setInt(2, idCarte);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        boolean set = false;
+        try {
+            set = myPreparedStatement.execute();
+            set = true;
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            set = false;
+        }
+        return set;
+    }
 }

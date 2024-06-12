@@ -77,6 +77,7 @@ export class GameService {
                                             if((correctNumberOfPlayer)&&(validator === 0)){
                                                 validator = 1;
                                                 GameService.displayRole(data);
+                                                clearInterval();
                                             }
                                         })
                                     }), 2000);
@@ -227,6 +228,7 @@ export class GameService {
                     MDI.remove();
                     random.remove();
                     GameService.afficher(data);
+                    GameService.setColorCard(data);
                     return true;
                 }
             })
@@ -245,6 +247,7 @@ export class GameService {
                     MDI.remove();
                     random.remove();
                     GameService.afficher(data);
+                    GameService.setColorCard(data);
                     return true;
                 }
             })
@@ -269,6 +272,7 @@ export class GameService {
                     MDI.remove();
                     random.remove();
                     GameService.afficher(data);
+                    GameService.setColorCard(data);
                     return true;
                 }
             })
@@ -277,6 +281,64 @@ export class GameService {
     static async affectRole(codePartie, player, role1, role2){
         const response = await fetch("http://localhost:8080/affectrole/"+codePartie+"/"+player+"/"+role1+"/"+role2);
         if(response.status === 200){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    static setColorCard(data){
+        const allCardsId = [];
+        for(let i = 0; i < data["cards"].length; i++){
+            allCardsId.push(data["cards"][i].id);
+        }
+        const randomcard = [];
+        const alreadyChooseNumber = [];
+        const tabWithIdToSet = [];
+        for(let i = 0; i < 10; i++){
+            let valide = 0;
+            let condition = 0;
+            let temp = 0;
+            while(condition == 0){
+                condition = 0;
+                valide = 0;
+                temp = Math.floor(Math.random() * 24);
+                for(let j = 0; j < alreadyChooseNumber.length; j++){
+                    if(temp === alreadyChooseNumber[j]){
+                        valide++;
+                    }
+                }
+                if(valide == 0){
+                    condition = 1;
+                }
+            }
+            alreadyChooseNumber.push(temp);
+            randomcard.push(temp);
+        }
+        for(let i = 0; i < randomcard.length; i++){
+            tabWithIdToSet[i] = data["cards"][i].id;
+        }
+        GameService.sendColor(tabWithIdToSet).then(() => {
+            console.log("les cartes ont bien été coloré");
+            }).catch((error) => {
+                console.log("les cartes ne sont pas colorés", error);
+        })
+    }
+    static async sendColor(tab){
+        let affectation = 0;
+        for(let i = 0; i < (tab.length-2); i++){
+            const response = await fetch("http://localhost:8080/setcolor/"+"3/"+tab[i]);
+            if(response.status === 200){
+                affectation++;
+            }
+        }
+        for(let i = (tab.length-2); i < tab.length; i++){
+            const response = await fetch("http://localhost:8080/setcolor/"+"2/"+tab[i]);
+            if(response.status === 200){
+                affectation++;
+            }
+        }
+        if(affectation == 10){
             return true;
         }
         else{
