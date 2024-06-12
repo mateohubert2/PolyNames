@@ -20,3 +20,6 @@ Backend/bin/webserver/WebServerRouter.class
 Backend/bin/webserver/WebServerSSE.class
 Backend/bin/controllers/GameController.class
 Backend/bin/models/Content.class
+Backend/bin/webserver/WebServerSSEEvent.class
+Backend/bin/webserver/WebServerSSEEventHandler.class
+Backend/bin/webserver/WebServerSSEEventType.class
