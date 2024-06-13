@@ -26,5 +26,6 @@ public class App {
        webserver.getRouter().get("/checkcolor/:codePartie/:mot", (WebServerContext context) -> { GameController.checkColor(context); });
 
        webserver.getRouter().post("/mot/:word", (WebServerContext context) -> { GameController.sendWord(context); });
+       webserver.getRouter().post("/number/:number", (WebServerContext context) -> { GameController.sendNumber(context); });
     }
 }

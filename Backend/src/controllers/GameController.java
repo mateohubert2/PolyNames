@@ -208,8 +208,10 @@ public class GameController {
     }
     public static void sendWord(WebServerContext context){
         WebServerRequest request = context.getRequest();
+        WebServerResponse response = context.getResponse();
         String word = request.getParam("word");
         context.getSSE().emit("mot", word);
+        response.ok("ok");
     }
     public static void checkColor(WebServerContext context){
         GameDAO gameDAO = new GameDAO();
@@ -221,5 +223,13 @@ public class GameController {
         int valeur = gameDAO.checkRole(codePartie, mot);
         context.getSSE().emit("point", valeur);
         response.json(valeur);
+    }
+    public static void sendNumber(WebServerContext context){
+        WebServerRequest request = context.getRequest();
+        WebServerResponse response = context.getResponse();
+        String number = request.getParam("number");
+        context.getSSE().emit("number", number);
+        response.ok("ok");
+
     }
 }

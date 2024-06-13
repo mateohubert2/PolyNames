@@ -77,6 +77,7 @@ export class GameService {
                     const nombre = number.value;
                     GameService.sendWord(mot);
                     GameService.sendWord(nombre);
+                    GameService.sendNumber(nombre);
                     sessionStorage.setItem("clickable", JSON.stringify("false"));
                     }
                 });
@@ -93,30 +94,43 @@ export class GameService {
                 }
             }
             else{
+                sessionStorage.setItem("clickable_card", JSON.stringify("false"));
                 for(let i = 0; i < data["cards"].length; i++){
                     const cartes = document.querySelector(".cards");
                     const carte = document.createElement("div");
                     carte.classList = "card";
                     carte.innerHTML = data["cards"][cardMixIndex[i]].mot;
+                    let compteur = 0;
                     carte.addEventListener("click", () => {
-                        const mot = carte.innerHTML;
-                        let codePartie = sessionStorage.getItem("codePartie");
-                        codePartie = codePartie.replace(/^"|"$/g, '');
-                        GameService.checkColorAndEvoleTheGame(codePartie, mot).then((value) => {
-                            console.log(value);
-                            if(value === 1){
-                                carte.classList = "card1";
-                                console.log("point");
+                        let clickable_card = sessionStorage.getItem("clickable_card");
+                        clickable_card = clickable_card.replace(/^"|"$/g, '');
+                        if(clickable_card === "true"){
+                            const mot = carte.innerHTML;
+                            let guessNumber = sessionStorage.getItem("possibleFind");
+                            if(guessNumber !== null){
+                                guessNumber = guessNumber.replace(/^"|"$/g, '');
                             }
-                            if(value === 2){
-                                carte.classList = "card2";
-                                console.log("pas de point");
+                            if(guessNumber >= 0){
+                                let codePartie = sessionStorage.getItem("codePartie");
+                                codePartie = codePartie.replace(/^"|"$/g, '');
+                                GameService.checkColorAndEvoleTheGame(codePartie, mot).then((value) => {
+                                    guessNumber--;
+                                    sessionStorage.setItem("possibleFind", JSON.stringify(guessNumber));
+                                    if(value === 1){
+                                        carte.classList = "card1";
+                                        console.log("point");
+                                    }
+                                    if(value === 2){
+                                        carte.classList = "card2";
+                                        console.log("pas de point");
+                                    }
+                                    if(value === 3){
+                                        carte.classList = "card3";
+                                        console.log("perdu");
+                                    }
+                                });
                             }
-                            if(value === 3){
-                                carte.classList = "card3";
-                                console.log("perdu");
-                            }
-                        });
+                        }
                     });
                     cartes.appendChild(carte);
                 }
@@ -126,6 +140,9 @@ export class GameService {
                 const idSEE = setTimeout(() => {
                     sseClient.subscribe("mot", (word) => {
                         GameService.displayWord(word);
+                    });
+                    sseClient.subscribe("number", (number) => {
+                        GameService.howManyFindPossible(number);
                     });
                     compteur++;
                     if(compteur > 5){
@@ -167,6 +184,7 @@ export class GameService {
                     const nombre = number.value;
                     GameService.sendWord(mot);
                     GameService.sendWord(nombre);
+                    GameService.sendNumber(nombre);
                     sessionStorage.setItem("clickable", JSON.stringify("false"));
                     }
                 });
@@ -183,30 +201,42 @@ export class GameService {
                 }
             }
             else{
+                sessionStorage.setItem("clickable_card", JSON.stringify("false"));
                 for(let i = 0; i < data["cards"].length; i++){
                     const cartes = document.querySelector(".cards");
                     const carte = document.createElement("div");
                     carte.classList = "card";
                     carte.innerHTML = data["cards"][game[i]].mot;
                     carte.addEventListener("click", () => {
-                        const mot = carte.innerHTML;
-                        let codePartie = sessionStorage.getItem("codePartie");
-                        codePartie = codePartie.replace(/^"|"$/g, '');
-                        GameService.checkColorAndEvoleTheGame(codePartie, mot).then((value) => {
-                            console.log(value);
-                            if(value === 1){
-                                carte.classList = "card1";
-                                console.log("point");
+                        let clickable_card = sessionStorage.getItem("clickable_card");
+                        clickable_card = clickable_card.replace(/^"|"$/g, '');
+                        if(clickable_card === "true"){
+                            const mot = carte.innerHTML;
+                            let guessNumber = sessionStorage.getItem("possibleFind");
+                            if(guessNumber !== null){
+                                guessNumber = guessNumber.replace(/^"|"$/g, '');
                             }
-                            if(value === 2){
-                                carte.classList = "card2";
-                                console.log("pas de point");
+                            if(guessNumber >= 0){
+                                let codePartie = sessionStorage.getItem("codePartie");
+                                codePartie = codePartie.replace(/^"|"$/g, '');
+                                GameService.checkColorAndEvoleTheGame(codePartie, mot).then((value) => {
+                                    guessNumber--;
+                                    sessionStorage.setItem("possibleFind", JSON.stringify(guessNumber));
+                                    if(value === 1){
+                                        carte.classList = "card1";
+                                        console.log("point");
+                                    }
+                                    if(value === 2){
+                                        carte.classList = "card2";
+                                        console.log("pas de point");
+                                    }
+                                    if(value === 3){
+                                        carte.classList = "card3";
+                                        console.log("perdu");
+                                    }
+                                });
                             }
-                            if(value === 3){
-                                carte.classList = "card3";
-                                console.log("perdu");
-                            }
-                        });
+                        }
                     });
                     cartes.appendChild(carte);
                 }
@@ -214,6 +244,9 @@ export class GameService {
                 sseClient.connect();
                 sseClient.subscribe("mot", (word) => {
                     GameService.displayWord(word);
+                });
+                sseClient.subscribe("number", (number) => {
+                    GameService.howManyFindPossible(number);
                 });
             }
         }
@@ -610,7 +643,7 @@ export class GameService {
         const plateau = document.querySelector(".plateau");
         const body = document.querySelector("body");
         body.insertBefore(indice, plateau);
-        console.log(word);
+        sessionStorage.setItem("clickable_card", JSON.stringify("true"));
     }
     static async checkColorAndEvoleTheGame(codePartie, mot){
         const response = await fetch("http://localhost:8080/checkcolor/"+codePartie+"/"+mot);
@@ -618,5 +651,12 @@ export class GameService {
             const valeur = response.json();
             return valeur;
         }
+    }
+    static async sendNumber(number){
+        const response = await fetch("http://localhost:8080/number/"+number, {method: "POST"});
+    }
+    static howManyFindPossible(number){
+        console.log(number);
+        sessionStorage.setItem("possibleFind", JSON.stringify(number));
     }
 }
