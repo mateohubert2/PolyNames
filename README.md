@@ -8,7 +8,7 @@ Pour jouer à PolyNames, il faut cloner le dépôt git. Ensuite, utiliser le SGB
 Rendez-vous dans le dossier Backend, dans le fichier PolyNamesDatabase.java et modifier le constructeur suivant avec vos informations:
 ![remplacementbdd](https://github.com/mateohubert2/PolyNames/assets/104895927/2177aa2a-adf8-430e-be05-943346503739)
 ## Lancer une partie
-Pour lancer une partie rendez-vous dans le dossier Backend et lancer le fichier App.java
+our lancer une partie, rendez-vous dans le dossier Backend et lancez le fichier App.java.
 ## Comment jouer?
 Une fois le serveur lancé, rendez-vous sur http://localhost:8080/home.html vous devriez tomber sur cette page:
 ![home html](https://github.com/mateohubert2/PolyNames/assets/104895927/d54f9ed9-45ad-41ae-8717-cdc6d23906e0)
