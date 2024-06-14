@@ -452,7 +452,7 @@ export class GameService {
         random.innerHTML = "Random";
         const titrePartie = document.querySelector(".titre");
         titrePartie.innerHTML = "Vous êtes sur la partie de: " + data["game"].code_perso + ". Voici le code de la partie: " + data["game"].code_numerique;
-        titrePartie.innerHTML = titrePartie.innerHTML + "<br>Veuillez choisir votre role. Votre équipier aura l'autre ou role."
+        titrePartie.innerHTML = titrePartie.innerHTML + "<br>Veuillez choisir votre role. Votre équipier aura l'autre."
         plateau.appendChild(MDM);
         plateau.appendChild(MDI);
         plateau.appendChild(random);
